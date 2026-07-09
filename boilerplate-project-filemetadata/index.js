@@ -1,14 +1,11 @@
 const express = require('express');
 const multer = require('multer');
+const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
 // ----- 配置 CORS（允许跨域请求）-----
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
+app.use(cors({ optionsSuccessStatus: 200 }));
 
 // ----- 配置 multer（允许上传任何文件）-----
 const storage = multer.memoryStorage();
