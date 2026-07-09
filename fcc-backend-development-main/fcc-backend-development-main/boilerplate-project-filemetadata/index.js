@@ -1,27 +1,34 @@
-var express = require('express');
-var cors = require('cors');
-var multer = require('multer')
-require('dotenv').config()
+const express = require('express');
+const multer = require('multer');
+const app = express();
+const port = process.env.PORT || 3000;
 
-var app = express();
+// 配置 multer（使用内存存储）
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
-app.use(cors());
-app.use('/public', express.static(process.cwd() + '/public'));
-
-app.get('/', function (req, res) {
-  res.sendFile(process.cwd() + '/views/index.html');
+// 根路由
+app.get('/', (req, res) => {
+  res.send(`
+    <form action="/api/fileanalyse" enctype="multipart/form-data" method="POST">
+      <input type="file" name="upfile" />
+      <input type="submit" />
+    </form>
+  `);
 });
 
-app.post('/api/fileanalyse', multer().single('upfile'), function (req, res, next) {
-  if (req.file) {
-    const { originalname: name, mimetype: type, size } = req.file
-    res.json({ name, type, size })
-  } else {
-    res.json({ error: 'no file' })
+// 核心路由：文件上传
+app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
+  if (!req.file) {
+    return res.json({ error: 'No file uploaded' });
   }
-})
+  res.json({
+    name: req.file.originalname,
+    type: req.file.mimetype,
+    size: req.file.size
+  });
+});
 
-const port = process.env.PORT || 3000;
-app.listen(port, function () {
-  console.log('Your app is listening on port ' + port)
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
