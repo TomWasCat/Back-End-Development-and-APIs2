@@ -3,6 +3,13 @@ const multer = require('multer');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// ✅ 添加 CORS 支持（放在所有路由之前）
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
 // 配置 multer（使用内存存储）
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
